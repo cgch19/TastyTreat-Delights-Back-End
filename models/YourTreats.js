@@ -10,3 +10,4 @@ const YourTreatsSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model("Yourtreats", YourTreatsSchema)
+
