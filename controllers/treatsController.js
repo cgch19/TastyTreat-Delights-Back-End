@@ -11,9 +11,22 @@ const getYourtreats = async (req, res) => {
         }
     } catch (err) { res.status(400).json({ error: err.message }) }
 }
+const createYourtreats = async (req, res) => {
+    try {
+        const createdFavoriteArtist = await db.YourTreats.create({...req.body, User: req.user.id })
+        createdYourtreats.save()
+        console.log(createdYourtreats)
+        if (!createYourtreats) {
+            res.status(400).json({ message: "Cannot create your treats" })
+        } else {
+            res.status(201).json({ data: createdFavoriteArtist, message: "Your treats created" })
+        }
+    } catch (err) { res.status(400).json({ error: err.message }) }
+}
 
 module.exports = {
-    getYourtreats
+    getYourtreats,
+    createYourtreats
 }
 
 
