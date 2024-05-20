@@ -1,13 +1,12 @@
-const {default: mongoose} = require("mongoose")
-const User = require("./User")
+const mongoose = require('mongoose');
 
 const YourTreatsSchema = new mongoose.Schema({
-    Product: String,
-    Image: String,
-    Description: String,
-    Price: Number,
-    User: {type: mongoose.Types.ObjectId, ref: User}
-})
+  Product: String,
+  Image: String,
+  Description: String,
+  Price: Number,
+  User: { type: mongoose.Schema.Types.ObjectId, ref: 'User' } 
+});
 
-module.exports = mongoose.model("Yourtreats", YourTreatsSchema)
-
+ const Treats = mongoose.model('YourTreats', YourTreatsSchema);
+ module.exports = Treats
