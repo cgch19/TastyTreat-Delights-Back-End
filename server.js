@@ -23,7 +23,7 @@ db.once('open', () => {
 });
 
 // Use the routes
-app.use('/api', treatsRouter); // No API prefix
+app.use('/api', treatsRouter); 
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
