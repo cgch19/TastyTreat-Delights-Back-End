@@ -1,16 +1,16 @@
-const db = require('../models/Treats');
+const db = require ('../models/Treats')
 
-// Function to get your treats
+// Get all treats
 const getYourtreats = async (req, res) => {
   try {
     console.log('getYourtreats called');
     console.log('Request user ID:', req.user ? req.user.id : 'No user ID');
 
-    const foundTreats = await db.Treat.find({});
+    const foundTreats = await db.Treat.find({ User: req.user.id });
     console.log('Found treats:', foundTreats);
 
     if (!foundTreats || foundTreats.length === 0) {
-      console.log('No treats found');
+      console.log('No treats found for user:', req.user.id);
       res.status(404).json({ message: 'Cannot find treats' });
     } else {
       res.status(200).json({ data: foundTreats });
@@ -21,19 +21,19 @@ const getYourtreats = async (req, res) => {
   }
 };
 
-// Function to create your treats
+// Create a new treat
 const createYourtreats = async (req, res) => {
   try {
     console.log('createYourtreats called');
     console.log('Request body:', req.body);
     console.log('Request user ID:', req.user ? req.user.id : 'No user ID');
 
-    const createdYourTreats = await db.Treat.create(req.body);
+    const createdYourTreats = await db.Treat.create(req.body );
     await createdYourTreats.save();
     console.log('Saved created treats:', createdYourTreats);
 
     if (!createdYourTreats) {
-      console.log('Failed to create treats');
+      console.log('Failed to create treats for user:', req.user.id);
       res.status(400).json({ message: 'Cannot create your treats' });
     } else {
       res.status(201).json({ data: createdYourTreats, message: 'Your treats created' });
