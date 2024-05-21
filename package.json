@@ -7,7 +7,8 @@
     "express": "^4.19.2",
     "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.6.2",
-    "mongoose": "^8.4.0"
+    "mongoose": "^8.4.0",
+    "react-scripts": "^5.0.1"
   },
   "name": "tastytreat-delights-back-end",
   "description": "",

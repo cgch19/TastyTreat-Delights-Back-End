@@ -3,7 +3,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
-const treatsRouter = require('./controllers/index'); // Import the router
+const treatsRouter = require('./controllers/index'); 
 
 const app = express();
 const { PORT, MONGODB_URI } = process.env;
@@ -23,7 +23,7 @@ db.once('open', () => {
 });
 
 // Use the routes
-app.use('/', treatsRouter); // No API prefix
+app.use('/api', treatsRouter); 
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
