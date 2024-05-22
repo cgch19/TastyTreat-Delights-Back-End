@@ -42,7 +42,30 @@ const createYourtreats = async (req, res) => {
   }
 };
 
+const deleteYourtreats = async (req, res) => {
+  try {
+    console.log('deleteYourtreats called');
+    const { id } = req.params;
+    console.log('Treat ID to delete:', id);
+
+    const deletedTreat = await db.Treat.findByIdAndDelete(id);
+    console.log('Deleted treat:', deletedTreat);
+
+    if (!deletedTreat) {
+      console.log('Treat not found');
+      res.status(404).json({ message: 'Treat not found' });
+    } else {
+      res.status(200).json({ data: deletedTreat, message: 'Treat deleted successfully' });
+    }
+  } catch (err) {
+    console.error('Error deleting treat:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getYourtreats,
   createYourtreats,
+  deleteYourtreats,
 };
+
