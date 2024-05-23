@@ -19,7 +19,6 @@ const getYourtreats = async (req, res) => {
     res.status(400).json({ error: err.message });
   }
 };
-
 // Create a new treat
 const createYourtreats = async (req, res) => {
   try {
@@ -42,6 +41,34 @@ const createYourtreats = async (req, res) => {
   }
 };
 
+// Update Your Treats
+const updateYourtreats = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) {
+      console.error('Error updating treat: ID is undefined');
+      return res.status(400).json({ error: 'ID is undefined' });
+    }
+    console.log('Treat ID to update:', id);
+    console.log('Request body:', req.body);
+
+    const updatedTreat = await db.Treat.findByIdAndUpdate(id, req.body, { new: true });
+    console.log('Updated treat:', updatedTreat);
+
+    if (!updatedTreat) {
+      console.log('Treat not found');
+      res.status(404).json({ message: 'Treat not found' });
+    } else {
+      res.status(200).json({ data: updatedTreat, message: 'Treat updated successfully' });
+    }
+  } catch (err) {
+    console.error('Error updating treat:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+};
+
+
+// Delete Treats Route
 const deleteYourtreats = async (req, res) => {
   try {
     console.log('deleteYourtreats called');
@@ -66,6 +93,6 @@ const deleteYourtreats = async (req, res) => {
 module.exports = {
   getYourtreats,
   createYourtreats,
+  updateYourtreats,
   deleteYourtreats,
 };
-
