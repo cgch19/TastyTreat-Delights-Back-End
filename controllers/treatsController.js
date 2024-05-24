@@ -98,10 +98,9 @@ const sellYourtreats = async (req, res) => {
     console.log('Request body:', req.body);
 
     const treatToSell = req.body;
-
     delete treatToSell._id;
 
-    const createdCatalogEntry = await Catalog.create(treatToSell); 
+    const createdCatalogEntry = await Catalog.create(treatToSell);
     console.log('Saved sold treat:', createdCatalogEntry);
 
     if (!createdCatalogEntry) {
@@ -138,11 +137,34 @@ const getCatalog = async (req, res) => {
   }
 };
 
+// DELETE CATALOG ITEMSS
+const deleteCatalogItem = async (req, res) => {
+  try {
+    console.log('deleteCatalogItem called');
+    const { id } = req.params;
+    console.log('Catalog item ID to delete:', id);
+
+    const deletedCatalogItem = await Catalog.findByIdAndDelete(id);
+    console.log('Deleted catalog item:', deletedCatalogItem);
+
+    if (!deletedCatalogItem) {
+      console.log('Catalog item not found');
+      res.status(404).json({ message: 'Catalog item not found' });
+    } else {
+      res.status(200).json({ data: deletedCatalogItem, message: 'Catalog item deleted successfully' });
+    }
+  } catch (err) {
+    console.error('Error deleting catalog item:', err.message);
+    res.status(400).json({ error: err.message });
+  }
+};
+
 module.exports = {
   getYourtreats,
   createYourtreats,
   updateYourtreats,
   deleteYourtreats,
-  sellYourtreats, 
-  getCatalog, 
+  sellYourtreats,
+  getCatalog,
+  deleteCatalogItem 
 };

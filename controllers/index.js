@@ -7,5 +7,6 @@ router.put("/Treats/:id", YourtreatsCtrl.updateYourtreats);
 router.delete("/Treats/:id", YourtreatsCtrl.deleteYourtreats);
 router.post("/Treats/sell", YourtreatsCtrl.sellYourtreats);
 router.get("/Catalog", YourtreatsCtrl.getCatalog); 
+router.delete('/Catalog/:id', YourtreatsCtrl.deleteCatalogItem); 
 
 module.exports = router;
