@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const YourtreatsCtrl = require("./treatsController");
+const { verifyToken } = require("../middleware/verifyToken")
+const userCtrl = require("./userController")
 
 router.get("/Treats", YourtreatsCtrl.getYourtreats);
 router.post("/Treats", YourtreatsCtrl.createYourtreats);
@@ -8,5 +10,9 @@ router.delete("/Treats/:id", YourtreatsCtrl.deleteYourtreats);
 router.post("/Treats/sell", YourtreatsCtrl.sellYourtreats);
 router.get("/Catalog", YourtreatsCtrl.getCatalog); 
 router.delete('/Catalog/:id', YourtreatsCtrl.deleteCatalogItem); 
+
+router.post("/auth/signup", userCtrl.signup)
+router.post("/auth/login", userCtrl.login)
+router.use(verifyToken)
 
 module.exports = router;

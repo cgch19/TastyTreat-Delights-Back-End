@@ -1,43 +1,27 @@
-const db = require('../models/Treats');
-const Catalog = require('../models/catalog')
+const db = require('../models');
+const Catalog = require('../models/catalog');
 
-// Get all treats
+// Get all treats for logged-in user
 const getYourtreats = async (req, res) => {
   try {
-    console.log('getYourtreats called');
-
-    const foundTreats = await db.Treat.find({});
-    console.log('Found treats:', foundTreats);
-
+    const foundTreats = await db.Treat.find({ userId: req.user.id });
     if (!foundTreats || foundTreats.length === 0) {
-      console.log('No treats found');
-      res.status(404).json({ message: 'Cannot find treats' });
-    } else {
-      res.status(200).json({ data: foundTreats });
+      return res.status(404).json({ message: 'Cannot find treats' });
     }
+    res.status(200).json({ data: foundTreats });
   } catch (err) {
-    console.error('Error finding treats:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
+
 // Create a new treat
 const createYourtreats = async (req, res) => {
   try {
-    console.log('createYourtreats called');
-    console.log('Request body:', req.body);
-
+    req.body.userId = req.user.id; // Attach user ID to the new treat
     const createdYourTreats = await db.Treat.create(req.body);
     await createdYourTreats.save();
-    console.log('Saved created treats:', createdYourTreats);
-
-    if (!createdYourTreats) {
-      console.log('Failed to create treats');
-      res.status(400).json({ message: 'Cannot create your treats' });
-    } else {
-      res.status(201).json({ data: createdYourTreats, message: 'Your treats created' });
-    }
+    res.status(201).json({ data: createdYourTreats, message: 'Your treats created' });
   } catch (err) {
-    console.error('Error creating treats:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
@@ -46,47 +30,30 @@ const createYourtreats = async (req, res) => {
 const updateYourtreats = async (req, res) => {
   try {
     const { id } = req.params;
-    if (!id) {
-      console.error('Error updating treat: ID is undefined');
-      return res.status(400).json({ error: 'ID is undefined' });
-    }
-    console.log('Treat ID to update:', id);
-    console.log('Request body:', req.body);
-
-    const updatedTreat = await db.Treat.findByIdAndUpdate(id, req.body, { new: true });
-    console.log('Updated treat:', updatedTreat);
-
+    const updatedTreat = await db.Treat.findOneAndUpdate(
+      { _id: id, userId: req.user.id },
+      req.body,
+      { new: true }
+    );
     if (!updatedTreat) {
-      console.log('Treat not found');
-      res.status(404).json({ message: 'Treat not found' });
-    } else {
-      res.status(200).json({ data: updatedTreat, message: 'Treat updated successfully' });
+      return res.status(404).json({ message: 'Treat not found' });
     }
+    res.status(200).json({ data: updatedTreat, message: 'Treat updated successfully' });
   } catch (err) {
-    console.error('Error updating treat:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
 
-
 // Delete Treats Route
 const deleteYourtreats = async (req, res) => {
   try {
-    console.log('deleteYourtreats called');
     const { id } = req.params;
-    console.log('Treat ID to delete:', id);
-
-    const deletedTreat = await db.Treat.findByIdAndDelete(id);
-    console.log('Deleted treat:', deletedTreat);
-
+    const deletedTreat = await db.Treat.findOneAndDelete({ _id: id, userId: req.user.id });
     if (!deletedTreat) {
-      console.log('Treat not found');
-      res.status(404).json({ message: 'Treat not found' });
-    } else {
-      res.status(200).json({ data: deletedTreat, message: 'Treat deleted successfully' });
+      return res.status(404).json({ message: 'Treat not found' });
     }
+    res.status(200).json({ data: deletedTreat, message: 'Treat deleted successfully' });
   } catch (err) {
-    console.error('Error deleting treat:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
@@ -94,26 +61,15 @@ const deleteYourtreats = async (req, res) => {
 // Sell a treat
 const sellYourtreats = async (req, res) => {
   try {
-    console.log('sellYourtreats called');
-    console.log('Request body:', req.body);
-
-    const treatToSell = req.body;
-    delete treatToSell._id;
-
-    const createdCatalogEntry = await Catalog.create(treatToSell);
-    console.log('Saved sold treat:', createdCatalogEntry);
-
-    if (!createdCatalogEntry) {
-      console.log('Failed to sell treat');
-      return res.status(400).json({ message: 'Cannot sell your treat' });
+    const treatToSell = await db.Treat.findOne({ _id: req.body._id, userId: req.user.id });
+    if (!treatToSell) {
+      return res.status(404).json({ message: 'Treat not found' });
     }
-
-    const deletedTreat = await db.Treat.findByIdAndDelete(req.body._id);
-    console.log('Deleted treat from Treats:', deletedTreat);
-
+    delete treatToSell._id; // Remove _id to avoid duplicate key error
+    const createdCatalogEntry = await Catalog.create(treatToSell);
+    await db.Treat.findByIdAndDelete(req.body._id);
     res.status(201).json({ data: createdCatalogEntry, message: 'Your treat has been sold and added to the catalog' });
   } catch (err) {
-    console.error('Error selling treat:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
@@ -121,40 +77,26 @@ const sellYourtreats = async (req, res) => {
 // Get catalog items
 const getCatalog = async (req, res) => {
   try {
-    console.log('getCatalog called');
     const catalogItems = await Catalog.find({});
-    console.log('Found catalog items:', catalogItems);
-
     if (!catalogItems || catalogItems.length === 0) {
-      console.log('No catalog items found');
-      res.status(404).json({ message: 'No catalog items found' });
-    } else {
-      res.status(200).json({ data: catalogItems });
+      return res.status(404).json({ message: 'No catalog items found' });
     }
+    res.status(200).json({ data: catalogItems });
   } catch (err) {
-    console.error('Error finding catalog items:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
 
-// DELETE CATALOG ITEMSS
+// DELETE CATALOG ITEMS
 const deleteCatalogItem = async (req, res) => {
   try {
-    console.log('deleteCatalogItem called');
     const { id } = req.params;
-    console.log('Catalog item ID to delete:', id);
-
     const deletedCatalogItem = await Catalog.findByIdAndDelete(id);
-    console.log('Deleted catalog item:', deletedCatalogItem);
-
     if (!deletedCatalogItem) {
-      console.log('Catalog item not found');
-      res.status(404).json({ message: 'Catalog item not found' });
-    } else {
-      res.status(200).json({ data: deletedCatalogItem, message: 'Catalog item deleted successfully' });
+      return res.status(404).json({ message: 'Catalog item not found' });
     }
+    res.status(200).json({ data: deletedCatalogItem, message: 'Catalog item deleted successfully' });
   } catch (err) {
-    console.error('Error deleting catalog item:', err.message);
     res.status(400).json({ error: err.message });
   }
 };
@@ -166,5 +108,5 @@ module.exports = {
   deleteYourtreats,
   sellYourtreats,
   getCatalog,
-  deleteCatalogItem 
+  deleteCatalogItem
 };

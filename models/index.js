@@ -14,7 +14,7 @@ mongoose.connection
     console.log("Error connecting to MongoDB", error);
     });
 
-// module.exports = {
-//     User: require("./User"),
-//     YourTreats: require("./YourTreats")
-// }
+module.exports = {
+    User: require("./User"),
+    YourTreats: require("./YourTreats")
+}
