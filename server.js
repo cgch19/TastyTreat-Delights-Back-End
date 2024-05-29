@@ -5,6 +5,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const treatsRouter = require('./controllers/index'); 
 
+
 const app = express();
 const { PORT, MONGODB_URI } = process.env;
 
@@ -12,7 +13,6 @@ const { PORT, MONGODB_URI } = process.env;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
 // MongoDB connection
 mongoose.connect(MONGODB_URI, {});
 const db = mongoose.connection;
