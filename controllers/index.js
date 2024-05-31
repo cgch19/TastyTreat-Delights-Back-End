@@ -1,11 +1,11 @@
 const router = require('express').Router();
-const YourtreatsCtrl = require('./treatsController');
+const YourtreatsCtrl = require('../controllers/treatsController');
 const { verifyToken } = require('../middleware/verifyToken');
-const userCtrl = require('./userController');
+const userCtrl = require('../controllers/userController');
 
 // Authentication routes
 router.post('/auth/signup', userCtrl.signup);
-router.post('/auth/login', userCtrl.login);
+router.post('/auth/login', userCtrl.login);  // Ensure this route is defined
 
 // Protected routes (require authentication)
 router.use(verifyToken);

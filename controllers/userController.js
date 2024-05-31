@@ -5,53 +5,62 @@ const bcrypt = require("bcrypt")
 
 const signup = async (req, res) => {
     try {
-        const { email, username, password } = req.body
-        const query = db.User.find()
-        query.or([{ username: username }, { email: email }])
-        const foundUser = await query.exec()
+        const { email, username, password } = req.body;
 
-        if (foundUser.length !== 0) {
-            return res.status(400).json({ message: "Username or email taken." })
+        // Check if username or email already exists
+        const existingUser = await db.User.findOne({ $or: [{ username }, { email }] });
+        if (existingUser) {
+            return res.status(400).json({ error: "Username or email already taken." });
         }
-        const salt = await bcrypt.genSalt(10)
-        const hash = await bcrypt.hash(password, salt)
 
-        req.body.password = hash
-        const createdUser = await db.User.create(req.body)
-        await createdUser.save()
-        console.log(createdUser)
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
 
-        return res.status(201).json({ message: "User successfully registered", userId: createdUser.id })
+        // Create new user
+        const newUser = new db.User({
+            email,
+            username,
+            password: hashedPassword
+        });
+        await newUser.save();
+
+        return res.status(201).json({ message: "User successfully registered", userId: newUser.id });
     } catch (err) {
-        console.log(err)
-        return res.status(500).json({ error: "Internal server error", message: err.message })
+        console.error("Error during signup:", err);
+        return res.status(500).json({ error: "Internal server error" });
     }
-}
+};
+
 
 const login = async (req, res) => {
     try {
-        const { password, username } = req.body
+        const { password, username } = req.body;
 
-        const query = db.User.find({ username })
+        // Find user by username
+        const foundUser = await db.User.findOne({ username });
 
-        const foundUser = await query.exec()
-
-        if (foundUser.length === 0) {
-            return res.status(400).json({ error: "Invalid login credentials" })
+        // If user not found, return error
+        if (!foundUser) {
+            return res.status(400).json({ error: "Invalid login credentials" });
         }
 
-        const verifyPassword = await bcrypt.compare(password, foundUser[0].password)
+        // Compare passwords
+        const verifyPassword = await bcrypt.compare(password, foundUser.password);
         if (!verifyPassword) {
-            return res.status(400).json({ error: "Invalid login credentials" })
+            return res.status(400).json({ error: "Invalid login credentials" });
         }
-        const token = createToken(foundUser[0])
-        return res.status(200).json({ token, id: foundUser[0]._id })
-    } catch (err) {
-        console.log(err)
-        return res.status(500).json({ message: "Internal server error", error: err.message })
-    }
-}
 
+        // Generate token
+        const token = createToken(foundUser);
+
+        // Return token and user ID
+        return res.status(200).json({ token, id: foundUser._id });
+    } catch (err) {
+        console.error("Error during login:", err);
+        return res.status(500).json({ error: "Internal server error" });
+    }
+};
 const getUser = async (req, res) => {
 
     try {
