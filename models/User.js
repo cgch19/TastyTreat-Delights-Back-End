@@ -7,11 +7,10 @@ const userSchema = new mongoose.Schema({
     password:{type: String, required: true},
     //https://www.slingacademy.com/article/how-to-use-enums-in-mongoose-a-practical-guide/
     //https://thewebdev.info/2022/02/28/how-to-create-and-use-enums-in-mongoose/
-    // use this
+    // used this for the role
     role: {type: String, enum: ['Admin', 'User'], default: 'User'}
 })
 
 
 
 module.exports = mongoose.model("User", userSchema)
-//d
