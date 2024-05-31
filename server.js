@@ -13,7 +13,15 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// MongoDB connection
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log('Connected to MongoDB'))
+  .catch(err => console.error('Error connecting to MongoDB:', err));
 
+// Root route
+app.get('/', (req, res) => {
+  res.send('Welcome to the Tasty Treats API');
+});
 
 // Use the routes
 app.use('/api', treatsRouter);
