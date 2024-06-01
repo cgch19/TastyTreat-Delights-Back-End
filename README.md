@@ -1,6 +1,5 @@
 # TastyTreat-Delights-Back-End
 
-# TastyTreat-Delights 
 
 Welcome to TastyTreat Delights is an online platform that offers a wide selection of gourmet desserts, baked goods, and confectionery treats. Customers can browse through the menu, place orders, and be able to go to the blog to write their recipes and opinions about treats.
 
