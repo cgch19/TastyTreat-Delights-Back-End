@@ -15,10 +15,10 @@ Welcome to TastyTreat Delights is an online platform that offers a wide selectio
 
 # Getting Started 
 
-Sign up and Log in to start creating artist and listening to music !
+### Sign up and Log in to start creating blogs and buying treats !
 
 Heroku 
-
+https://tasty-treats-front-end-a12898d71bbe.herokuapp.com/
 
 
 Trello
